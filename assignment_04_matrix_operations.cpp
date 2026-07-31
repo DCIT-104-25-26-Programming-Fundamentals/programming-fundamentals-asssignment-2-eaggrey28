@@ -65,3 +65,130 @@
 #include <string>
 using namespace std;
 
+const int MAX_SIZE = 10;
+
+void readMatrix(int matrix[MAX_SIZE][MAX_SIZE], int rows, int columns,
+                const string& name) {
+    cout << "Enter elements for matrix " << name << ":" << endl;
+
+    for (int row = 0; row < rows; row++) {
+        for (int column = 0; column < columns; column++) {
+            cout << "Enter element [" << row << "][" << column << "]: ";
+            cin >> matrix[row][column];
+        }
+    }
+}
+
+void displayMatrix(const int matrix[MAX_SIZE][MAX_SIZE], int rows, int columns) {
+    for (int row = 0; row < rows; row++) {
+        for (int column = 0; column < columns; column++) {
+            cout << setw(5) << matrix[row][column];
+        }
+        cout << endl;
+    }
+}
+
+void transposeMatrix(const int matrix[MAX_SIZE][MAX_SIZE],
+                     int transposed[MAX_SIZE][MAX_SIZE],
+                     int rows, int columns) {
+    for (int row = 0; row < rows; row++) {
+        for (int column = 0; column < columns; column++) {
+            transposed[column][row] = matrix[row][column];
+        }
+    }
+}
+
+void addMatrices(const int first[MAX_SIZE][MAX_SIZE],
+                 const int second[MAX_SIZE][MAX_SIZE],
+                 int result[MAX_SIZE][MAX_SIZE],
+                 int rows, int columns) {
+    for (int row = 0; row < rows; row++) {
+        for (int column = 0; column < columns; column++) {
+            result[row][column] = first[row][column] + second[row][column];
+        }
+    }
+}
+
+void multiplyMatrices(const int first[MAX_SIZE][MAX_SIZE],
+                      const int second[MAX_SIZE][MAX_SIZE],
+                      int result[MAX_SIZE][MAX_SIZE],
+                      int firstRows, int sharedSize, int secondColumns) {
+    for (int row = 0; row < firstRows; row++) {
+        for (int column = 0; column < secondColumns; column++) {
+            result[row][column] = 0;
+
+            for (int index = 0; index < sharedSize; index++) {
+                result[row][column] +=
+                    first[row][index] * second[index][column];
+            }
+        }
+    }
+}
+
+bool validDimension(int dimension) {
+    return dimension > 0 && dimension <= MAX_SIZE;
+}
+
+int main() {
+    int rows;
+    int columns;
+    int matrixA[MAX_SIZE][MAX_SIZE];
+    int matrixB[MAX_SIZE][MAX_SIZE];
+    int result[MAX_SIZE][MAX_SIZE];
+
+    cout << "PART A - Transpose a Matrix" << endl;
+    cout << "Enter number of rows: ";
+    cin >> rows;
+    cout << "Enter number of columns: ";
+    cin >> columns;
+
+    if (!validDimension(rows) || !validDimension(columns)) {
+        cout << "Error: Dimensions must be between 1 and 10." << endl;
+        return 0;
+    }
+
+    readMatrix(matrixA, rows, columns, "A");
+
+    cout << endl << "Original Matrix:" << endl;
+    displayMatrix(matrixA, rows, columns);
+
+    transposeMatrix(matrixA, result, rows, columns);
+    cout << endl << "Transposed Matrix:" << endl;
+    displayMatrix(result, columns, rows);
+
+    cout << endl << "PART B - Add Two Matrices" << endl;
+    readMatrix(matrixA, rows, columns, "A");
+    readMatrix(matrixB, rows, columns, "B");
+    addMatrices(matrixA, matrixB, result, rows, columns);
+
+    cout << endl << "Sum Matrix:" << endl;
+    displayMatrix(result, rows, columns);
+
+    int firstRows;
+    int sharedSize;
+    int secondColumns;
+
+    cout << endl << "PART C - Multiply Two Matrices" << endl;
+    cout << "Enter rows for matrix A: ";
+    cin >> firstRows;
+    cout << "Enter columns for matrix A / rows for matrix B: ";
+    cin >> sharedSize;
+    cout << "Enter columns for matrix B: ";
+    cin >> secondColumns;
+
+    if (!validDimension(firstRows) || !validDimension(sharedSize) ||
+        !validDimension(secondColumns)) {
+        cout << "Error: Dimensions must be between 1 and 10." << endl;
+        return 0;
+    }
+
+    readMatrix(matrixA, firstRows, sharedSize, "A");
+    readMatrix(matrixB, sharedSize, secondColumns, "B");
+    multiplyMatrices(matrixA, matrixB, result, firstRows, sharedSize,
+                     secondColumns);
+
+    cout << endl << "Product Matrix:" << endl;
+    displayMatrix(result, firstRows, secondColumns);
+
+    return 0;
+}
